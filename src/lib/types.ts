@@ -73,3 +73,22 @@ export type DeploymentEvent = {
   creator: string;
   createdAt: string;
 };
+
+export type AiEvaluationLog = {
+  id: string;
+  requestId: string;
+  ticketId?: string;
+  source: "demo" | "openai";
+  model: string;
+  score: number;
+  latencyMs: number;
+  promptMessageCount: number;
+  promptCharCount: number;
+  responseCharCount: number;
+  safetyPassed: boolean;
+  groundedTicketContext: boolean;
+  containsNextSteps: boolean;
+  containsCustomerReply: boolean;
+  notes: string;
+  createdAt: string;
+};

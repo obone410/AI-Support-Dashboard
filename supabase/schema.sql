@@ -56,6 +56,26 @@ create table if not exists public.conversation_messages (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.ai_evaluation_logs (
+  id text primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  ticket_id text,
+  request_id text not null,
+  source text not null check (source in ('demo', 'openai')),
+  model text not null,
+  score integer not null check (score >= 0 and score <= 100),
+  latency_ms integer not null check (latency_ms >= 0),
+  prompt_message_count integer not null default 0 check (prompt_message_count >= 0),
+  prompt_char_count integer not null default 0 check (prompt_char_count >= 0),
+  response_char_count integer not null default 0 check (response_char_count >= 0),
+  safety_passed boolean not null default false,
+  grounded_ticket_context boolean not null default false,
+  contains_next_steps boolean not null default false,
+  contains_customer_reply boolean not null default false,
+  notes text not null,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists support_teams_user_id_idx
 on public.support_teams(user_id);
 
@@ -90,11 +110,18 @@ on public.conversation_messages(ticket_id, created_at);
 create index if not exists conversation_messages_user_created_idx
 on public.conversation_messages(user_id, created_at desc);
 
+create index if not exists ai_evaluation_logs_user_created_idx
+on public.ai_evaluation_logs(user_id, created_at desc);
+
+create index if not exists ai_evaluation_logs_ticket_created_idx
+on public.ai_evaluation_logs(ticket_id, created_at desc);
+
 alter table public.profiles enable row level security;
 alter table public.support_teams enable row level security;
 alter table public.support_agents enable row level security;
 alter table public.support_tickets enable row level security;
 alter table public.conversation_messages enable row level security;
+alter table public.ai_evaluation_logs enable row level security;
 
 create policy "Users can read their own profile"
 on public.profiles for select
@@ -176,5 +203,24 @@ with check (
     from public.support_tickets
     where support_tickets.id = conversation_messages.ticket_id
       and support_tickets.user_id = auth.uid()
+  )
+);
+
+create policy "Users can read their own AI evaluation logs"
+on public.ai_evaluation_logs for select
+using (auth.uid() = user_id);
+
+create policy "Users can create their own AI evaluation logs"
+on public.ai_evaluation_logs for insert
+with check (
+  auth.uid() = user_id
+  and (
+    ticket_id is null
+    or exists (
+      select 1
+      from public.support_tickets
+      where support_tickets.id = ai_evaluation_logs.ticket_id
+        and support_tickets.user_id = auth.uid()
+    )
   )
 );

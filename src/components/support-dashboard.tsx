@@ -3,6 +3,7 @@
 import {
   Activity,
   AlertTriangle,
+  BarChart3,
   Bell,
   Bot,
   CheckCircle2,
@@ -24,6 +25,7 @@ import {
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 import {
   demoAgents,
+  demoAiEvaluationLogs,
   demoConversationThreads,
   demoDeployments,
   demoTeams,
@@ -39,6 +41,7 @@ import {
 } from "@/lib/operations";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type {
+  AiEvaluationLog,
   ChatMessage,
   ConversationThreads,
   DeploymentEvent,
@@ -53,7 +56,8 @@ import type {
 const storageKeys = {
   user: "ai-support-dashboard:user",
   tickets: "ai-support-dashboard:tickets",
-  threads: "ai-support-dashboard:threads"
+  threads: "ai-support-dashboard:threads",
+  evaluations: "ai-support-dashboard:evaluations"
 };
 
 const categories: TicketCategory[] = [
@@ -160,6 +164,13 @@ function deploymentStyle(state: DeploymentEvent["state"]) {
   return styles[state];
 }
 
+function evaluationStyle(score: number) {
+  if (score >= 90) return "border-moss/20 bg-moss/10 text-moss";
+  if (score >= 75) return "border-sea/20 bg-sea/10 text-sea";
+  if (score >= 60) return "border-amber/25 bg-amber/10 text-amber";
+  return "border-red-500/25 bg-red-500/10 text-red-700";
+}
+
 function formatTime(value: string) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
@@ -193,6 +204,8 @@ export function SupportDashboard() {
     useState<ConversationThreads>(demoConversationThreads);
   const [deployments, setDeployments] =
     useState<DeploymentEvent[]>(demoDeployments);
+  const [aiEvaluationLogs, setAiEvaluationLogs] =
+    useState<AiEvaluationLog[]>(demoAiEvaluationLogs);
   const [deploymentSource, setDeploymentSource] = useState("demo");
   const [selectedTicketId, setSelectedTicketId] = useState(demoTickets[0]?.id);
   const [searchTerm, setSearchTerm] = useState("");
@@ -231,6 +244,10 @@ export function SupportDashboard() {
       storageKeys.threads,
       demoConversationThreads
     );
+    const storedEvaluations = readStoredJson<AiEvaluationLog[]>(
+      storageKeys.evaluations,
+      demoAiEvaluationLogs
+    );
     const nextUser =
       isSupabaseConfigured && storedUser && !isUuid(storedUser.id)
         ? null
@@ -241,6 +258,7 @@ export function SupportDashboard() {
       setCurrentUser(nextUser);
       setTickets(storedTickets);
       setConversationThreads(storedThreads);
+      setAiEvaluationLogs(storedEvaluations);
       setSelectedTicketId(storedTickets[0]?.id);
     });
 
@@ -260,6 +278,12 @@ export function SupportDashboard() {
       writeStoredJson(storageKeys.threads, conversationThreads);
     }
   }, [conversationThreads]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      writeStoredJson(storageKeys.evaluations, aiEvaluationLogs);
+    }
+  }, [aiEvaluationLogs]);
 
   useEffect(() => {
     if (currentUser && !isSupabaseConfigured) {
@@ -358,6 +382,43 @@ export function SupportDashboard() {
     loadSupabaseThread();
   }, [currentUser, selectedTicketId]);
 
+  useEffect(() => {
+    async function loadSupabaseEvaluations() {
+      if (!supabase || !currentUser) return;
+
+      const { data, error } = await supabase
+        .from("ai_evaluation_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      if (error || !data?.length) return;
+
+      setAiEvaluationLogs(
+        data.map((row) => ({
+          id: row.id,
+          requestId: row.request_id,
+          ticketId: row.ticket_id ?? undefined,
+          source: row.source,
+          model: row.model,
+          score: row.score,
+          latencyMs: row.latency_ms,
+          promptMessageCount: row.prompt_message_count,
+          promptCharCount: row.prompt_char_count,
+          responseCharCount: row.response_char_count,
+          safetyPassed: row.safety_passed,
+          groundedTicketContext: row.grounded_ticket_context,
+          containsNextSteps: row.contains_next_steps,
+          containsCustomerReply: row.contains_customer_reply,
+          notes: row.notes,
+          createdAt: row.created_at
+        })) as AiEvaluationLog[]
+      );
+    }
+
+    loadSupabaseEvaluations();
+  }, [currentUser]);
+
   const selectedTicket = useMemo(
     () => tickets.find((ticketItem) => ticketItem.id === selectedTicketId),
     [selectedTicketId, tickets]
@@ -439,12 +500,25 @@ export function SupportDashboard() {
         return;
       }
 
+      const userId = data.user?.id ?? makeId("user");
+      const { data: storedProfile } = data.user
+        ? await supabase
+            .from("profiles")
+            .select("name,email,role,team")
+            .eq("id", data.user.id)
+            .maybeSingle()
+        : { data: null };
+
       const profile: UserProfile = {
-        id: data.user?.id ?? makeId("user"),
-        name: authForm.name || data.user?.email?.split("@")[0] || "Support User",
-        email: data.user?.email ?? authForm.email,
-        role: "agent",
-        team: "Customer Operations"
+        id: userId,
+        name:
+          storedProfile?.name ??
+          authForm.name ??
+          data.user?.email?.split("@")[0] ??
+          "Support User",
+        email: storedProfile?.email ?? data.user?.email ?? authForm.email,
+        role: (storedProfile?.role as UserRole | undefined) ?? "agent",
+        team: storedProfile?.team ?? "Customer Operations"
       };
 
       await supabase.from("profiles").upsert({
@@ -672,6 +746,29 @@ export function SupportDashboard() {
         ...current,
         [selectedTicket.id]: [...nextMessages, assistantMessage]
       }));
+      if (data.evaluation) {
+        setAiEvaluationLogs((current) => [
+          {
+            id: makeId("eval"),
+            requestId: data.requestId ?? makeId("req"),
+            ticketId: selectedTicket.id,
+            source: data.source,
+            model: data.evaluation.model,
+            score: data.evaluation.score,
+            latencyMs: data.evaluation.latencyMs,
+            promptMessageCount: data.evaluation.promptMessageCount,
+            promptCharCount: data.evaluation.promptCharCount,
+            responseCharCount: data.evaluation.responseCharCount,
+            safetyPassed: data.evaluation.safetyPassed,
+            groundedTicketContext: data.evaluation.groundedTicketContext,
+            containsNextSteps: data.evaluation.containsNextSteps,
+            containsCustomerReply: data.evaluation.containsCustomerReply,
+            notes: data.evaluation.notes,
+            createdAt: nowIso()
+          },
+          ...current
+        ].slice(0, 6));
+      }
       await persistMessage(assistantMessage);
       setNotice(
         data.source === "openai"
@@ -1400,6 +1497,44 @@ export function SupportDashboard() {
                       <GitBranch size={13} aria-hidden="true" />
                       {deployment.branch} · {deployment.target} ·{" "}
                       {formatTime(deployment.createdAt)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+
+            <Panel
+              eyebrow="AI quality"
+              title="Evaluation logs"
+              icon={<BarChart3 size={20} aria-hidden="true" />}
+            >
+              <div className="space-y-3">
+                {aiEvaluationLogs.slice(0, 4).map((log) => (
+                  <div
+                    key={log.id}
+                    className="rounded-2xl border border-white/55 bg-white/35 p-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-semibold">{log.model}</p>
+                      <Pill className={evaluationStyle(log.score)}>
+                        {log.score}/100
+                      </Pill>
+                    </div>
+                    <p className="mt-2 text-xs text-ink/55">
+                      {log.source} · {log.latencyMs}ms ·{" "}
+                      {formatTime(log.createdAt)}
+                    </p>
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-ink/60">
+                      <span>{log.safetyPassed ? "Safe" : "Review"}</span>
+                      <span>
+                        {log.groundedTicketContext ? "Grounded" : "Weak context"}
+                      </span>
+                      <span>
+                        {log.containsNextSteps ? "Next steps" : "No next steps"}
+                      </span>
+                      <span>
+                        {log.containsCustomerReply ? "Reply draft" : "No reply"}
+                      </span>
                     </div>
                   </div>
                 ))}

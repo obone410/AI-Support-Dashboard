@@ -1,4 +1,5 @@
 import type {
+  AiEvaluationLog,
   ChatMessage,
   ConversationThreads,
   DeploymentEvent,
@@ -195,5 +196,46 @@ export const demoDeployments: DeploymentEvent[] = [
     branch: "security-pass",
     creator: "Portfolio Admin",
     createdAt: "2026-05-13T21:30:00.000Z"
+  }
+];
+
+export const demoAiEvaluationLogs: AiEvaluationLog[] = [
+  {
+    id: "eval-demo-1",
+    requestId: "req-demo-1007",
+    ticketId: "tkt-1007",
+    source: "openai",
+    model: "gpt-4o-mini",
+    score: 92,
+    latencyMs: 1180,
+    promptMessageCount: 3,
+    promptCharCount: 1420,
+    responseCharCount: 860,
+    safetyPassed: true,
+    groundedTicketContext: true,
+    containsNextSteps: true,
+    containsCustomerReply: true,
+    notes:
+      "Grounded in the active billing ticket, included escalation timing, investigation steps, and a customer-safe reply.",
+    createdAt: "2026-05-14T18:46:00.000Z"
+  },
+  {
+    id: "eval-demo-2",
+    requestId: "req-demo-1005",
+    ticketId: "tkt-1005",
+    source: "openai",
+    model: "gpt-4o-mini",
+    score: 88,
+    latencyMs: 1345,
+    promptMessageCount: 4,
+    promptCharCount: 1680,
+    responseCharCount: 790,
+    safetyPassed: true,
+    groundedTicketContext: true,
+    containsNextSteps: true,
+    containsCustomerReply: false,
+    notes:
+      "Strong incident triage with concrete webhook evidence requests; response draft was intentionally deferred for engineering confirmation.",
+    createdAt: "2026-05-14T18:20:00.000Z"
   }
 ];

@@ -1,10 +1,10 @@
 # Security Audit
 
-Last reviewed: May 14, 2026.
+Last reviewed: May 15, 2026.
 
 ## Scope
 
-This audit covers the AI Support Agent Dashboard before public push and deployment. Reviewed areas include Next.js API routes, Supabase schema and row-level security, Vercel deployment monitoring, environment handling, local storage behavior, dependency health, cache behavior, production headers, and Git/Vercel ignore rules.
+This audit covers the AI Support Agent Dashboard before public push and deployment. Reviewed areas include Next.js API routes, Supabase schema and row-level security, Vercel deployment monitoring, AI evaluation logging, environment handling, local storage behavior, dependency health, cache behavior, production headers, and Git/Vercel ignore rules.
 
 ## Threat Model
 
@@ -30,6 +30,7 @@ No high or critical findings remain after remediation.
 - Public API routes now include fixed-window rate limiting headers.
 - Production responses now include security headers for HSTS, frame blocking, content-type sniffing protection, referrer policy, and browser permission restrictions.
 - Supabase schema now includes indexes for high-traffic ticket, assignment, SLA, and conversation queries.
+- AI evaluation logs are persisted behind Supabase row-level security and linked to authenticated users.
 
 ## Validation Evidence
 
@@ -48,6 +49,7 @@ No high or critical findings remain after remediation.
 - Live Vercel deployment returned `401` for fake bearer-token `/api/ai-support` requests.
 - Live Vercel project currently has Supabase, OpenAI, Vercel deployment monitoring, and `REQUIRE_AI_AUTH=true` configured in Vercel.
 - Live Vercel deployment monitoring returned `source=vercel` with real deployment events.
+- Live recruiter demo account was seeded with sample tickets, teams, agents, conversation threads, SLA states, and AI evaluation logs.
 - No provider secrets are committed to the repository or local project files.
 
 ## Remaining Production Hardening

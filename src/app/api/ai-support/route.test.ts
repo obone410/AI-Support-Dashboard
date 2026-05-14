@@ -56,6 +56,8 @@ describe("/api/ai-support", () => {
     expect(response.status).toBe(200);
     expect(data.source).toBe("demo");
     expect(data.reply).toContain("Triage summary");
+    expect(data.evaluation.score).toBeGreaterThanOrEqual(80);
+    expect(data.evaluation.safetyPassed).toBe(true);
   });
 
   it("rejects invalid payloads", async () => {
