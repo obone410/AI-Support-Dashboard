@@ -1,10 +1,31 @@
 # AI Support Agent Dashboard
 
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-149ECA?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-AI%20Assistant-412991?style=for-the-badge&logo=openai&logoColor=white)](https://platform.openai.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://vercel.com/)
+[![Security](https://img.shields.io/badge/Security-Audited-0F766E?style=for-the-badge&logo=shield&logoColor=white)](SECURITY_AUDIT.md)
+
 An AI-assisted support operations dashboard built with Next.js 16, React 19, Tailwind CSS 4, Supabase-ready authentication, ticket storage, role-based operations views, Vercel deployment monitoring, and a server-side OpenAI SDK route that keeps provider credentials out of the browser.
 
 This is a portfolio MVP designed to show modern AI tooling, backend integration, deployment workflows, security awareness, admin operations, and professional product thinking.
 
-![AI Support Dashboard demo](docs/assets/dashboard-demo.gif)
+## Visual Walkthrough
+
+<p align="center">
+  <img src="docs/assets/dashboard-demo.gif" alt="Animated walkthrough of the AI Support Agent Dashboard" width="900">
+</p>
+
+<p align="center">
+  <a href="https://ai-support-dashboard-navy.vercel.app"><strong>Live Demo</strong></a>
+  ·
+  <a href="#screenshots"><strong>Screenshots</strong></a>
+  ·
+  <a href="#architecture"><strong>Architecture</strong></a>
+  ·
+  <a href="#security-audit"><strong>Security Audit</strong></a>
+</p>
 
 ## Project Overview
 
@@ -97,25 +118,28 @@ The goal was to show how AI can fit into a real support workflow without exposin
 
 ## Screenshots
 
-### Dashboard Overview
+| Dashboard Overview | AI Assistant |
+| --- | --- |
+| ![Dashboard overview](docs/assets/screenshots/dashboard-overview.png) | ![AI assistant](docs/assets/screenshots/ai-assistant.png) |
+| Full support operations view with tickets, SLA risk, deployment health, role-aware controls, and AI quality metrics. | Ticket-aware AI assistant with conversation history, support guidance, response drafting, and evaluation metadata. |
 
-![Dashboard overview](docs/assets/screenshots/dashboard-overview.png)
+| SLA Notifications | Deployment Monitor |
+| --- | --- |
+| ![SLA notifications](docs/assets/screenshots/sla-notifications.png) | ![Deployment monitor](docs/assets/screenshots/deployment-monitor.png) |
+| Breached and due-soon tickets surface clearly for support operations review. | Server-side Vercel integration shows live deployment events without exposing Vercel tokens. |
 
-### AI Assistant
+| AI Evaluation Logs |
+| --- |
+| ![AI evaluation logs](docs/assets/screenshots/ai-evaluation-logs.png) |
+| Response quality is logged with score, latency, safety, grounding, next-step detection, and customer-reply detection. |
 
-![AI assistant](docs/assets/screenshots/ai-assistant.png)
+## Recruiter Highlights
 
-### Deployment Monitor
-
-![Deployment monitor](docs/assets/screenshots/deployment-monitor.png)
-
-### SLA Notifications
-
-![SLA notifications](docs/assets/screenshots/sla-notifications.png)
-
-### AI Evaluation Logs
-
-![AI evaluation logs](docs/assets/screenshots/ai-evaluation-logs.png)
+- AI operations workflow with real ticket context and response evaluation.
+- Supabase authentication, Postgres schema, indexes, and row-level security.
+- Server-side OpenAI and Vercel integrations with secrets kept out of the browser.
+- Role-based admin and agent views for realistic support team operations.
+- Deployment-ready Next.js app with tests, security audit notes, and live demo credentials.
 
 ## Architecture
 
