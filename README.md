@@ -34,10 +34,11 @@ The dashboard helps a SaaS support team manage tickets, assign work to agents, m
 ## Live Demo
 
 - Production: [https://ai-support-dashboard-navy.vercel.app](https://ai-support-dashboard-navy.vercel.app)
-- Demo email: `recruiter.demo@example.com`
-- Demo password: `DemoAccess!2026`
+- Demo Admin email: `recruiter.demo@example.com`
+- Demo Admin password: `DemoAccess!2026`
+- Local demo mode: run the app without Supabase environment variables, sign in with any email plus an 8+ character password, then switch between Admin and Agent in the demo role selector.
 
-The demo account is seeded with sample support tickets, teams, agents, conversation threads, Vercel deployment events, SLA risk states, and AI evaluation logs. Treat these credentials as public portfolio-demo credentials only.
+The live demo account is seeded with sample support tickets, teams, agents, conversation threads, Vercel deployment events, SLA risk states, and AI evaluation logs. Treat these credentials as public portfolio-demo credentials only.
 
 ## Why I Built This
 
@@ -114,6 +115,7 @@ The goal was to show how AI can fit into a real support workflow without exposin
 - `SECURITY_AUDIT.md`: records the latest pre-public security audit, validation evidence, and remaining production hardening guidance.
 - `README.md`: updated documentation, audit notes, stack details, feature list, project changes, and verification results.
 - `docs/assets/dashboard-demo.gif`: adds a short animated walkthrough for the GitHub README.
+- `docs/assets/architecture.png`: adds a polished system architecture image for the README.
 - `docs/assets/screenshots/*.png`: adds production screenshots for the dashboard, AI assistant, deployment monitor, SLA notifications, and AI evaluation logging.
 
 ## Screenshots
@@ -133,6 +135,11 @@ The goal was to show how AI can fit into a real support workflow without exposin
 | ![AI evaluation logs](docs/assets/screenshots/ai-evaluation-logs.png) |
 | Response quality is logged with score, latency, safety, grounding, next-step detection, and customer-reply detection. |
 
+| Admin Agent Management | Agent Assignment View |
+| --- | --- |
+| ![Admin and agent management](docs/assets/screenshots/admin-agent-management.png) | ![Agent assignment view](docs/assets/screenshots/agent-assignment-view.png) |
+| Admins can inspect team capacity, agent status, and active ticket load. | Agent mode hides administration and focuses on assigned work, SLA state, and ticket context. |
+
 ## Recruiter Highlights
 
 - AI operations workflow with real ticket context and response evaluation.
@@ -144,6 +151,10 @@ The goal was to show how AI can fit into a real support workflow without exposin
 ## Architecture
 
 The application uses the Next.js App Router.
+
+<p align="center">
+  <img src="docs/assets/architecture.png" alt="System architecture diagram showing Next.js client, API routes, Supabase, OpenAI, and Vercel APIs" width="900">
+</p>
 
 ```mermaid
 flowchart LR
@@ -245,7 +256,13 @@ When the user is authenticated, `/api/ai-support` writes the evaluation record t
 
 Recommended GitHub topics for this project:
 
-`nextjs`, `react`, `typescript`, `tailwindcss`, `supabase`, `openai`, `vercel`, `ai`, `support-dashboard`, `saas`, `portfolio-project`, `ai-operations`, `rls`, `security`, `vitest`
+`ai-dashboard`, `nextjs`, `supabase`, `openai`, `vercel`, `typescript`, `ai-operations`, `support-dashboard`, `tailwindcss`, `devops`, `react`, `saas`, `portfolio-project`, `rls`, `security`, `vitest`
+
+Suggested GitHub description:
+
+```text
+AI-assisted support operations dashboard with OpenAI, Supabase, role-based workflows, SLA monitoring, and Vercel deployment observability.
+```
 
 ## Security Considerations
 
