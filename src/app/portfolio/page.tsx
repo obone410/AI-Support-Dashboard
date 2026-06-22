@@ -94,7 +94,7 @@ export default function PortfolioPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 className="inline-flex items-center gap-2 rounded-md bg-[#0f1715] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1d2a27]"
-                href="/resume/Eyitayo_Oyedo_AI_Technical_Resume.pdf"
+                href="/resume/EYITAYO_OYEDO_Computer_Engineer_Main_Resume.pdf"
               >
                 <Download size={18} />
                 Download Resume
