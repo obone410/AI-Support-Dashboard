@@ -3,178 +3,456 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Eyitayo Oyedo - AI Technical Resume</title>
+    <title>Eyitayo Oyedo - Computer Engineer Resume</title>
     <style>
       @page {
         size: letter;
-        margin: 0.28in;
+        margin: 0;
       }
 
       * {
         box-sizing: border-box;
       }
 
+      :root {
+        --blue: #1f5fc8;
+        --ink: #111111;
+      }
+
       body {
         margin: 0;
-        color: #111111;
+        color: var(--ink);
         background: #ffffff;
-        font-family: Arial, Calibri, sans-serif;
-        font-size: 8.2pt;
-        line-height: 1.08;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .page {
+        position: relative;
+        width: 8.5in;
+        height: 11in;
+        margin: 0 auto;
+        overflow: hidden;
+        background: #ffffff;
+        break-after: page;
+        page-break-after: always;
+      }
+
+      .page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+
+      .content {
+        position: absolute;
+        left: 0.5in;
+        right: 0.5in;
+      }
+
+      .page-one .content {
+        top: 0.84in;
+      }
+
+      .page-continued .content {
+        top: 0.32in;
       }
 
       h1,
       h2,
       h3,
-      p {
+      p,
+      ul {
         margin: 0;
       }
 
       h1 {
-        font-size: 17pt;
-        letter-spacing: 0;
-        text-align: center;
+        color: var(--blue);
+        font-size: 27pt;
+        font-weight: 700;
+        letter-spacing: 0.2pt;
+        line-height: 1.05;
       }
 
-      h2 {
-        border-bottom: 1px solid #222222;
-        font-size: 9.5pt;
-        margin-top: 5px;
-        padding-bottom: 1px;
+      .headline {
+        font-size: 15pt;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: 0.08in;
         text-transform: uppercase;
       }
 
-      h3 {
-        font-size: 8.8pt;
-        margin-top: 4px;
-      }
-
-      p {
-        margin-top: 1px;
-      }
-
-      ul {
-        margin: 1px 0 0 13px;
-        padding: 0;
-      }
-
-      li {
-        margin: 0;
-      }
-
       .contact {
-        font-size: 8pt;
-        line-height: 1.15;
-        margin-top: 2px;
-        text-align: center;
+        font-size: 9.9pt;
+        line-height: 1.25;
+        margin-top: 0.04in;
       }
 
-      .skills p {
-        margin-top: 1px;
+      .lead {
+        font-size: 9.7pt;
+        line-height: 1.14;
+        margin-top: 0.25in;
       }
 
-      .meta {
-        font-size: 8pt;
+      .continued-title {
+        font-size: 9.9pt;
+        line-height: 1.2;
+      }
+
+      .section {
+        margin-top: 0.18in;
+      }
+
+      .section-heading {
+        border-bottom: 1.5pt solid var(--blue);
+        border-top: 1.5pt solid var(--blue);
+        color: var(--blue);
+        font-size: 11.5pt;
+        font-weight: 700;
+        line-height: 1.05;
+        padding: 0.035in 0 0.045in;
+        text-transform: uppercase;
+      }
+
+      .section-body {
+        font-size: 9.7pt;
+        line-height: 1.14;
+        margin-top: 0.08in;
+      }
+
+      a {
+        color: #005fc8;
+        text-decoration: underline;
+      }
+
+      .links {
+        font-size: 9.7pt;
+      }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 0.18in;
+        font-size: 9.7pt;
+        line-height: 1.28;
+        margin-top: 0.08in;
+      }
+
+      .skills-grid ul {
+        list-style-position: outside;
+        padding-left: 0.1in;
+      }
+
+      .project {
+        margin-top: 0.11in;
+      }
+
+      .entry-title {
+        font-size: 9.8pt;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .project-title {
+        font-size: 10.1pt;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .project p {
+        font-size: 10pt;
+        line-height: 1.18;
+        margin-top: 0.04in;
+      }
+
+      .entry {
+        margin-top: 0.1in;
+      }
+
+      .entry-line {
+        display: flex;
+        gap: 0.2in;
+        justify-content: space-between;
+      }
+
+      .entry-date {
+        flex: 0 0 auto;
+        font-size: 9.7pt;
+        font-weight: 700;
+      }
+
+      .location,
+      .degree {
+        font-size: 9.7pt;
+        line-height: 1.2;
+        margin-top: 0.04in;
+      }
+
+      .bullets {
+        font-size: 9.7pt;
+        line-height: 1.14;
+        margin-top: 0.045in;
+        padding-left: 0.11in;
+      }
+
+      .bullets li {
+        margin-top: 0.02in;
+        padding-left: 0.035in;
+      }
+
+      .additional p {
+        font-size: 9.7pt;
+        font-weight: 700;
+        line-height: 1.25;
+        margin-top: 0.1in;
+      }
+
+      .footer {
+        bottom: 0.33in;
+        font-size: 9.7pt;
+        left: 0.5in;
+        line-height: 1;
+        position: absolute;
+        right: 0.5in;
+      }
+
+      .footer .page-num {
+        color: #005fc8;
+        float: right;
+      }
+
+      @media screen {
+        body {
+          background: #d7d7d7;
+          padding: 24px 0;
+        }
+
+        .page {
+          box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+          margin-bottom: 24px;
+        }
       }
 
       @media print {
         body {
+          background: #ffffff;
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
+        }
+
+        .page {
+          box-shadow: none;
+          margin: 0;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>EYITAYO OYEDO</h1>
-      <p class="contact">
-        Lagos, Nigeria | +234 706 933 9723 | oyedoeyitayoidowu@gmail.com<br />
-        LinkedIn: linkedin.com/in/eyitayo-oyedo | GitHub: github.com/obone410
-      </p>
-    </header>
+    <section class="page page-one">
+      <main class="content">
+        <h1>EYITAYO OYEDO</h1>
+        <p class="headline">COMPUTER ENGINEER</p>
+        <p class="contact">
+          Lagos, Lagos 105101, Nigeria |
+          <a href="mailto:oyedoeyitayoidowu@gmail.com">oyedoeyitayoidowu@gmail.com</a>
+          | +2347069339723 | <a href="https://linkedin.com/in/eyitayo-oyedo">LinkedIn</a>
+        </p>
 
-    <section>
-      <h2>Professional Summary</h2>
-      <p>
-        Computer Engineering graduate with hands-on experience in AI tools, prompt engineering, cloud/devops fundamentals, backend integrations,
-        and technical operations. Skilled in GitHub collaboration, Vercel deployment workflows, Supabase backend integration, generative AI tools,
-        and AI-assisted development using ChatGPT and Claude Code. Knowledgeable in Docker, Kubernetes fundamentals, CI/CD pipelines, technical
-        research, and basic server security concepts. Experienced in customer-facing technology sales and technical support through business
-        operations and Starlink retail services. Strong analytical thinking, adaptability, and remote collaboration skills.
-      </p>
+        <p class="lead">
+          Results-focused Computer Engineering graduate specializing in AI-assisted development, prompt engineering, and cloud/DevOps
+          fundamentals. Skilled at building and deploying full-stack projects using ChatGPT/Claude Code, GitHub, Vercel and Supabase, and
+          applying Docker, CI/CD and Kubernetes fundamentals to streamline deployments; combines technical troubleshooting with
+          customer-facing sales/support experience and strong analytical problem-solving.
+        </p>
+
+        <section class="section">
+          <h2 class="section-heading">Profile</h2>
+          <p class="section-body">
+            Computer Engineering graduate who delivers AI-assisted fullstack projects and reliable deployment workflows. Experienced building and
+            deploying production-ready websites using ChatGPT and Claude Code, integrating Supabase backends, and managing Vercel/GitHub-based
+            CI/CD pipelines with Docker and Kubernetes fundamentals. Created reusable prompt-engineering templates and generative-AI workflows to
+            speed iteration and improve output consistency. Combines technical troubleshooting and cloud/devops knowledge with customer-facing
+            sales/support experience, strong analytical problem solving, and proven remote collaboration skills.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2 class="section-heading">Links</h2>
+          <p class="section-body links">
+            <a href="https://linkedin.com/in/eyitayo-oyedo">LinkedIn</a>, <a href="https://github.com/obone410">GitHub</a>
+          </p>
+        </section>
+
+        <section class="section">
+          <h2 class="section-heading">Technical Skills</h2>
+          <div class="skills-grid">
+            <ul>
+              <li>ChatGPT</li>
+              <li>Generative AI Tools</li>
+              <li>Vercel</li>
+              <li>Docker</li>
+              <li>Python (Beginner)</li>
+              <li>Google Workspace</li>
+              <li>Communication</li>
+            </ul>
+            <ul>
+              <li>Claude Code</li>
+              <li>AI Agent Workflows</li>
+              <li>Supabase</li>
+              <li>Kubernetes Fundamentals</li>
+              <li>Basic Server Security</li>
+              <li>Technical Research</li>
+              <li>Technical Support</li>
+            </ul>
+            <ul>
+              <li>Codex</li>
+              <li>MCP Concepts</li>
+              <li>Website Deployment</li>
+              <li>CI/CD Pipelines</li>
+              <li>Vulnerability Assessment Fundamentals</li>
+              <li>Problem Solving</li>
+              <li>Sales Operations</li>
+            </ul>
+            <ul>
+              <li>Prompt Engineering</li>
+              <li>GitHub</li>
+              <li>Backend Integration</li>
+              <li>Cloud/DevOps Fundamentals</li>
+              <li>Microsoft Office Suite</li>
+              <li>Remote Collaboration</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-heading">Projects</h2>
+          <div class="project">
+            <h3 class="project-title">AI-Assisted Website Development Projects</h3>
+            <p>
+              Used Claude Code and ChatGPT to assist in developing and deploying websites. Integrated backend services using Supabase. Managed
+              deployment workflows using Vercel. Worked with AI-assisted development and automation workflows. Utilized GitHub for version control
+              and collaboration.
+            </p>
+          </div>
+          <div class="project">
+            <h3 class="project-title">Generative AI &amp; Prompt Engineering Projects</h3>
+            <p>
+              Developed structured prompts for AI-generated text, images, and workflow assistance. Explored AI agent workflows, MCP concepts, and
+              model interaction systems. Conducted technical research on AI tools, automation systems, and deployment workflows. Evaluated
+              AI-generated outputs for accuracy, clarity, and usability.
+            </p>
+          </div>
+          <div class="project">
+            <h3 class="project-title">Cloud &amp; DevOps Learning Projects</h3>
+            <p>
+              Practiced Docker containerization and Kubernetes fundamentals. Studied CI/CD pipeline workflows and deployment concepts. Explored
+              cloud/devops engineering concepts and infrastructure workflows. Worked on beginner-level server security and vulnerability assessment
+              concepts.
+            </p>
+          </div>
+        </section>
+      </main>
+      <footer class="footer">
+        <span>oyedoeyitayoidowu@gmail.com</span>
+        <span class="page-num">Page 1</span>
+      </footer>
     </section>
 
-    <section class="skills">
-      <h2>Technical Skills</h2>
-      <p><strong>AI & Automation:</strong> ChatGPT, Claude Code, Codex, Prompt Engineering, Generative AI Tools, AI Agent Workflows, MCP Concepts</p>
-      <p><strong>Development & Deployment:</strong> GitHub, Vercel, Supabase, Website Deployment, Backend Integration</p>
-      <p><strong>Cloud & DevOps:</strong> Docker, Kubernetes Fundamentals, CI/CD Pipelines, Cloud/DevOps Fundamentals</p>
-      <p><strong>Programming:</strong> Python (Beginner)</p>
-      <p><strong>Security:</strong> Basic Server Security, Vulnerability Assessment Fundamentals</p>
-      <p><strong>Productivity Tools:</strong> Microsoft Office Suite, Google Workspace</p>
-      <p><strong>Professional Skills:</strong> Technical Research, Problem Solving, Remote Collaboration, Communication, Technical Support, Sales Operations</p>
+    <section class="page page-continued">
+      <main class="content">
+        <p class="continued-title">Eyitayo Oyedo, Computer Engineer</p>
+
+        <section class="section" style="margin-top: 0.34in">
+          <h2 class="section-heading">Professional Experience</h2>
+          <div class="entry">
+            <div class="entry-line">
+              <h3 class="entry-title">Technology Sales &amp; Operations, Bone Gadgets and Utilities LTD</h3>
+              <p class="entry-date">2020 to Present</p>
+            </div>
+            <p class="location">Lagos</p>
+            <ul class="bullets">
+              <li>Assisted customers with technology product recommendations and technical guidance.</li>
+              <li>Supported Starlink retail operations and customer consultations.</li>
+              <li>Conducted product research and pricing analysis.</li>
+              <li>Managed customer communication and online inquiries.</li>
+              <li>Provided technical troubleshooting support and technology education to customers.</li>
+              <li>Maintained organized operational and sales workflows.</li>
+            </ul>
+          </div>
+
+          <div class="entry">
+            <div class="entry-line">
+              <h3 class="entry-title">Systems Technician &amp; Support, Suraj Computing and Technology Solutions</h3>
+              <p class="entry-date">Jan 2007 to Dec 2010</p>
+            </div>
+            <p class="location">Navy Town, Lagos</p>
+            <ul class="bullets">
+              <li>Assisted students with WAEC, NECO and GCE exam registrations and related administrative processes.</li>
+              <li>Prepared, formatted, and edited documents and reports using Microsoft Word, Excel, and PowerPoint.</li>
+              <li>Installed, configured, and imaged Windows on networked workstations and performed basic hardware and network troubleshooting and maintenance.</li>
+              <li>Provided end-user support and training to students and staff on software use and system access.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-heading">Education</h2>
+          <div class="entry">
+            <div class="entry-line">
+              <h3 class="entry-title">Ladoke Akintola University Of Technology, Ogbomosho, Nigeria,<br />Ogbomosho</h3>
+              <p class="entry-date">Jan 2018 to Dec 2022</p>
+            </div>
+            <p class="degree">Bachelor's Degree in Computer Engineering</p>
+            <ul class="bullets">
+              <li>Bachelor of Computer Engineering focused on hardware and software integration with hands-on project work in embedded systems and fullstack development.</li>
+              <li>Capstone project: developed and deployed an AI-assisted web application integrating Supabase backend and Vercel CI/CD workflows.</li>
+              <li>Relevant coursework: Embedded Systems, Digital Logic, Computer Architecture, Algorithms &amp; Data Structures, Networks.</li>
+              <li>Practiced Docker-based containerization and applied basic Kubernetes and CI/CD concepts to deployment workflows.</li>
+            </ul>
+          </div>
+          <div class="entry">
+            <div class="entry-line">
+              <h3 class="entry-title">Nigeria Navy Secondary School, Abeokuta</h3>
+              <p class="entry-date">Jan 2000 to 2006</p>
+            </div>
+            <p class="degree">WAEC/SSCE</p>
+          </div>
+        </section>
+
+        <section class="section additional">
+          <h2 class="section-heading">Additional Information</h2>
+          <p>Strong interest in AI systems, cloud infrastructure, automation workflows, and technical operations.</p>
+          <p>Comfortable working independently in remote environments.</p>
+          <p>Fast learner with strong analytical and research skills.</p>
+          <p>Experience using modern AI productivity and development tools.</p>
+        </section>
+
+        <section class="section">
+          <h2 class="section-heading">Accomplishments</h2>
+          <ul class="bullets">
+            <li>Developed and deployed multiple AI-assisted websites using ChatGPT and Claude Code, integrating Supabase backends and Vercel deployments to streamline full-stack delivery.</li>
+            <li>Created reusable prompt-engineering templates and generative-AI workflows that improved output consistency and reduced iteration time for content and code generation.</li>
+            <li>Implemented GitHub-based CI/CD workflows and Docker containerization; applied Kubernetes fundamentals to standardize local-to-cloud deployment processes.</li>
+            <li>Supported Starlink retail operations and provided technical sales guidance and troubleshooting, helping customers with setup, product selection, and issue resolution.</li>
+          </ul>
+        </section>
+      </main>
+      <footer class="footer">
+        <span>oyedoeyitayoidowu@gmail.com</span>
+        <span class="page-num">Page 2</span>
+      </footer>
     </section>
 
-    <section>
-      <h2>Projects</h2>
-      <h3>AI-Assisted Website Development Projects</h3>
-      <p class="meta">Personal Projects | GitHub</p>
-      <ul>
-        <li>Used Claude Code and ChatGPT to assist in developing and deploying websites.</li>
-        <li>Integrated backend services using Supabase.</li>
-        <li>Managed deployment workflows using Vercel.</li>
-        <li>Worked with AI-assisted development and automation workflows.</li>
-        <li>Utilized GitHub for version control and collaboration.</li>
-      </ul>
-
-      <h3>Generative AI & Prompt Engineering Projects</h3>
-      <p class="meta">Personal Projects</p>
-      <ul>
-        <li>Developed structured prompts for AI-generated text, images, and workflow assistance.</li>
-        <li>Explored AI agent workflows, MCP concepts, and model interaction systems.</li>
-        <li>Conducted technical research on AI tools, automation systems, and deployment workflows.</li>
-        <li>Evaluated AI-generated outputs for accuracy, clarity, and usability.</li>
-      </ul>
-
-      <h3>Cloud & DevOps Learning Projects</h3>
-      <p class="meta">Personal Projects</p>
-      <ul>
-        <li>Practiced Docker containerization and Kubernetes fundamentals.</li>
-        <li>Studied CI/CD pipeline workflows and deployment concepts.</li>
-        <li>Explored cloud/devops engineering concepts and infrastructure workflows.</li>
-        <li>Worked on beginner-level server security and vulnerability assessment concepts.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Professional Experience</h2>
-      <h3>Bone Gadgets and Utilities LTD</h3>
-      <p class="meta">Technology Sales & Operations | Lagos, Nigeria | 2024 - Present</p>
-      <ul>
-        <li>Assisted customers with technology product recommendations and technical guidance.</li>
-        <li>Supported Starlink retail operations and customer consultations.</li>
-        <li>Conducted product research and pricing analysis.</li>
-        <li>Managed customer communication and online inquiries.</li>
-        <li>Provided technical troubleshooting support and technology education to customers.</li>
-        <li>Maintained organized operational and sales workflows.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Education</h2>
-      <p>Bachelor's Degree in Computer Engineering</p>
-      <p>Ladoke Akintola University Of Technology, Ogbomosho, Nigeria</p>
-    </section>
-
-    <section>
-      <h2>Additional Information</h2>
-      <ul>
-        <li>Strong interest in AI systems, cloud infrastructure, automation workflows, and technical operations.</li>
-        <li>Comfortable working independently in remote environments.</li>
-        <li>Fast learner with strong analytical and research skills.</li>
-        <li>Experience using modern AI productivity and development tools.</li>
-      </ul>
+    <section class="page page-continued">
+      <main class="content">
+        <p class="continued-title">Eyitayo Oyedo, Computer Engineer</p>
+        <ul class="bullets" style="font-size: 9.9pt; margin-top: 0.28in">
+          <li>Conducted technical research on cloud/devops, server security, and vulnerability assessment fundamentals; documented best practices to improve deployment reliability.</li>
+          <li>Managed remote collaboration and version control across projects, coordinating deployments and backend integrations to deliver projects on schedule.</li>
+        </ul>
+      </main>
+      <footer class="footer">
+        <span>oyedoeyitayoidowu@gmail.com</span>
+        <span class="page-num">Page 3</span>
+      </footer>
     </section>
   </body>
 </html>

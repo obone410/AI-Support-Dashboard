@@ -1,6 +1,6 @@
 # Security Audit
 
-Last reviewed: May 15, 2026.
+Last reviewed: June 25, 2026.
 
 ## Scope
 
@@ -29,16 +29,22 @@ No high or critical findings remain after remediation.
 - Vercel deployment monitoring returns `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`.
 - Public API routes now include fixed-window rate limiting headers.
 - Production responses now include security headers for HSTS, frame blocking, content-type sniffing protection, referrer policy, and browser permission restrictions.
+- Production responses now include a Content Security Policy, cross-origin opener/resource policies, origin-agent clustering, DNS prefetch blocking, and cross-domain policy blocking.
+- AI assistant requests now reject oversized payloads before parsing and cap OpenAI response tokens.
+- Project dependencies were refreshed to the current compatible Next.js 16, React 19, Supabase JS, OpenAI SDK, Tailwind CSS, and Vitest patch lines.
+- `npm audit fix` remediated vulnerable transitive dev dependencies including affected Vite, Undici, Babel, and js-yaml versions.
 - Supabase schema now includes indexes for high-traffic ticket, assignment, SLA, and conversation queries.
 - AI evaluation logs are persisted behind Supabase row-level security and linked to authenticated users.
 
 ## Validation Evidence
 
 - `npm run lint` passed.
-- `npm run test` passed with 7 tests across 3 test files.
-- `npm run build` passed.
-- `npm audit --omit=dev` reported `0 vulnerabilities`.
-- Secret scan found no committed OpenAI, Supabase, Vercel, or service-role token patterns.
+- `npm run test` passed with 8 tests across 3 test files.
+- `npm run build` passed on Next.js 16.2.9.
+- `npm audit` reported `0 vulnerabilities`.
+- `npm outdated` showed only ESLint 10 newer than the installed ESLint 9.39.4; ESLint 9 is retained because Next's current ESLint plugin stack still declares ESLint 9 peer support.
+- Secret-pattern sweep found only empty environment placeholders in `README.md` and no committed OpenAI, Supabase, Vercel, or service-role token values.
+- Local production smoke test returned `HTTP 200` for `/` and `/portfolio`, confirmed `Content-Security-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, the updated resume link, and the platform refresh section.
 - Git ignore checks confirmed `.env`, `.env.local`, `.env.production`, `.venv`, `venv`, `.vercel`, `.next`, `node_modules`, and server logs are ignored.
 - Production server smoke test returned `HTTP 200` for `/`.
 - Production server smoke test confirmed `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, and `Referrer-Policy: strict-origin-when-cross-origin`.

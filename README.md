@@ -78,46 +78,6 @@ The goal was to show how AI can fit into a real support workflow without exposin
 - Vercel REST API
 - Vercel CDN caching headers
 
-## Skills And Design Systems Used
-
-- `frontend-design`: used to keep the dashboard information-dense, responsive, and production-focused rather than landing-page styled.
-- `liquid-glass-design`: used to guide the Apple-inspired glass material, translucent panels, blur, depth, and interactive glass controls.
-- `apple-hig`: used to keep the interface calm, readable, touch-friendly, and aligned with familiar Apple-style hierarchy.
-- `codex-security:security-scan`: used to review auth boundaries, AI endpoint exposure, Supabase RLS policies, local storage behavior, provider error handling, dependency health, and production hardening notes.
-- `playwright`: used to capture production screenshots and generate a recruiter-ready dashboard walkthrough GIF.
-- `github:github`: used to prepare the repository for public presentation and publishing.
-
-## Updated Files
-
-- `package.json`: upgraded the stack, added Vitest scripts, and changed `npm run dev` to use webpack for local stability. `npm run dev:turbo` remains available for Turbopack testing.
-- `package-lock.json`: refreshed dependency lockfile after stack and test dependency upgrades.
-- `src/components/support-dashboard.tsx`: rebuilt the main dashboard with Apple-inspired glass UI, role-based admin and agent views, ticket assignment, SLA notifications, per-ticket conversation threads, and Vercel deployment monitoring.
-- `src/components/support-dashboard.test.tsx`: added an integration-style ticket creation test that verifies assignment-aware ticket creation, per-ticket thread persistence, and visible SLA breach notifications.
-- `src/app/api/ai-support/route.ts`: moved provider calls to the OpenAI SDK, tightened request validation, added optional bearer-token enforcement, stopped returning upstream provider details to clients, and records AI evaluation logs.
-- `src/app/api/ai-support/route.test.ts`: added API route tests for demo-mode AI responses, invalid request handling, production auth enforcement, rate limiting, and evaluation metadata.
-- `src/app/api/vercel/deployments/route.ts`: added a server-side Vercel deployments route that reads Vercel credentials from environment variables, rate limits requests, returns cache headers, and falls back to demo data when credentials are missing.
-- `src/app/api/vercel/deployments/route.test.ts`: added route coverage for cached deployment monitoring fallback behavior.
-- `src/lib/rate-limit.ts`: added a bounded per-instance fixed-window limiter for public API routes.
-- `src/app/globals.css`: migrated to Tailwind CSS 4 with CSS-first theme tokens and reusable glass UI classes.
-- `src/app/layout.tsx`: switched to a system font stack to prevent remote Google font fetch failures during production builds.
-- `src/app/error.tsx`: added a recoverable runtime error screen to reduce user-facing crashes.
-- `src/lib/types.ts`: expanded shared types for teams, agents, SLA-aware tickets, conversation thread maps, deployment events, and AI evaluation logs.
-- `src/lib/demo-data.ts`: added realistic demo teams, agents, assigned tickets, conversation threads, deployment events, and AI evaluation logs.
-- `src/lib/operations.ts`: added shared helpers for SLA calculation, SLA state, assignment counts, display names, and deployment status normalization.
-- `supabase/schema.sql`: added support teams and agents tables, ticket assignment fields, SLA due dates, AI evaluation logs, performance indexes, and tighter row-level security policies.
-- `vitest.config.ts`: configured Vitest with jsdom and the project alias.
-- `vitest.setup.ts`: added Testing Library cleanup, matcher setup, local storage resets, and fetch stubs for integration tests.
-- `next.config.mjs`: enabled production security headers and disabled the default powered-by header.
-- `postcss.config.mjs`: migrated PostCSS configuration to `@tailwindcss/postcss`.
-- `.env.example`: added AI auth and Vercel deployment monitoring environment variables.
-- `.gitignore`: blocks `.env`, `.env.*`, `.env*.local`, `.venv`, `venv`, `.vercel`, `.next`, `node_modules`, and local logs from public commits.
-- `.vercelignore`: blocks env files, virtualenv folders, local logs, dependencies, and build output from Vercel deployment uploads.
-- `SECURITY_AUDIT.md`: records the latest pre-public security audit, validation evidence, and remaining production hardening guidance.
-- `README.md`: updated documentation, audit notes, stack details, feature list, project changes, and verification results.
-- `docs/assets/dashboard-demo.gif`: adds a short animated walkthrough for the GitHub README.
-- `docs/assets/architecture.png`: adds a polished system architecture image for the README.
-- `docs/assets/screenshots/*.png`: adds production screenshots for the dashboard, AI assistant, deployment monitor, SLA notifications, and AI evaluation logging.
-
 ## Screenshots
 
 | Dashboard Overview | AI Assistant |
@@ -307,20 +267,6 @@ Last reviewed: May 15, 2026.
 - App error boundary added to reduce user-facing crashes.
 - Production screenshots and a README GIF were captured from the live deployment using the seeded recruiter demo account.
 
-### Resolved Since First Audit
-
-- Supabase profile upsert no longer sends a client-controlled `role` value.
-- Conversation message insert policy now verifies that the referenced ticket belongs to the authenticated user.
-- Supabase mode no longer persists tickets and messages to local storage.
-- AI provider error details are no longer returned directly to clients.
-- Role-based admin and agent views now separate admin operations from agent assignment views.
-- Ticket assignment fields and SLA due dates are modeled in TypeScript and Supabase.
-- AI evaluation logs are modeled in TypeScript, Supabase, seeded demo data, and the live dashboard UI.
-- Integration tests now cover the AI route and ticket creation flow.
-- `.env.*`, `.venv`, and `venv` are now explicitly ignored before public push.
-- API rate limiting and production security headers are now enabled.
-- AI auth now validates Supabase sessions instead of accepting any bearer-shaped token.
-
 ### Remaining Hardening
 
 - Replace the in-memory limiter with a distributed limiter such as Upstash Redis or Vercel Firewall for multi-region, million-user production traffic.
@@ -340,25 +286,6 @@ For traffic at million-user scale, add these production services before relying 
 - Database indexes on ticket owner, status, priority, team, assigned agent, SLA due date, and creation time.
 - Background jobs or webhooks for SLA breach notifications instead of browser-only checks.
 - Load testing with realistic ticket, auth, AI, and deployment-monitoring traffic.
-
-## Challenges Faced
-
-- Designing an MVP that works without paid API credentials.
-- Keeping AI and Vercel provider calls server-side while preserving a responsive UI.
-- Modeling ticket, assignment, SLA, deployment, and conversation storage for both local demo mode and Supabase.
-- Creating a dashboard that feels operational instead of tutorial-like.
-- Migrating from Tailwind CSS 3 configuration to Tailwind CSS 4 CSS-first tokens.
-- Balancing a glass-style interface with readable contrast and dense operational data.
-- Preventing local dev crashes by using webpack for `npm run dev` while keeping the normal production build flow.
-
-## Lessons Learned
-
-- AI features are stronger when tied to concrete workflow context.
-- A recruiter-friendly project needs architecture notes, security notes, tests, and deployment details, not only screenshots.
-- Local fallback behavior makes demos easier and improves resilience.
-- Database policies should be part of the first implementation, not an afterthought.
-- Role-based UI is clearer when admin operations and agent workflows are visibly different.
-- SLA and deployment monitoring make the project feel closer to a real support operations tool.
 
 ## Future Improvements
 

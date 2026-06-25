@@ -73,6 +73,24 @@ describe("/api/ai-support", () => {
     expect(data.error).toBe("Invalid support assistant request.");
   });
 
+  it("rejects oversized payloads before parsing", async () => {
+    const response = await POST(
+      makeRequest(
+        {
+          messages: [{ role: "user", content: "Hello" }]
+        },
+        {
+          "Content-Length": "32001"
+        }
+      )
+    );
+
+    const data = await response.json();
+
+    expect(response.status).toBe(413);
+    expect(data.error).toBe("AI support request is too large.");
+  });
+
   it("requires a bearer token when REQUIRE_AI_AUTH is enabled", async () => {
     process.env.REQUIRE_AI_AUTH = "true";
 

@@ -10,6 +10,9 @@ const noStoreHeaders = {
   "Cache-Control": "no-store, max-age=0"
 };
 
+const maxRequestBodyBytes = 32_000;
+const maxAssistantOutputTokens = 700;
+
 function createServerSupabaseClient(accessToken?: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -68,6 +71,7 @@ export async function POST(request: Request) {
     ...noStoreHeaders,
     ...limit.headers
   };
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
 
   if (!limit.allowed) {
     return NextResponse.json(
@@ -79,6 +83,13 @@ export async function POST(request: Request) {
           "Retry-After": String(limit.retryAfter)
         }
       }
+    );
+  }
+
+  if (contentLength > maxRequestBodyBytes) {
+    return NextResponse.json(
+      { error: "AI support request is too large." },
+      { status: 413, headers }
     );
   }
 
@@ -180,6 +191,7 @@ export async function POST(request: Request) {
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
       temperature: 0.35,
+      max_completion_tokens: maxAssistantOutputTokens,
       messages: [
         { role: "system", content: `${systemPrompt}\n\n${ticketContext}` },
         ...messages.map((message) => ({

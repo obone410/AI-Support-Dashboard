@@ -11,9 +11,16 @@ import {
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Eyitayo Oyedo | AI Operations Portfolio",
+  title: "AI Operations Portfolio",
   description:
-    "AI operations, prompt engineering, deployment monitoring, and technical systems portfolio."
+    "Eyitayo Oyedo's modern AI operations portfolio with secure Next.js dashboards, prompt systems, deployment monitoring, and technical systems projects.",
+  openGraph: {
+    title: "Eyitayo Oyedo | AI Operations Portfolio",
+    description:
+      "Secure AI operations portfolio built with Next.js, React, Supabase, OpenAI, Vercel, and Tailwind CSS.",
+    url: "/portfolio",
+    type: "profile"
+  }
 };
 
 const projects = [
@@ -55,23 +62,30 @@ const highlights = [
   {
     icon: Bot,
     title: "AI Operations",
-    text: "AI-assisted workflows, prompt systems, support operations, and research automation."
+    text: "AI-assisted workflows, prompt systems, support operations, research automation, and model-quality evaluation."
   },
   {
     icon: Cloud,
     title: "Cloud Deployment",
-    text: "Production-style deployments, Vercel workflows, monitoring concepts, and release visibility."
+    text: "Production-style Vercel workflows, deployment telemetry, CI/CD visibility, and release-health monitoring."
   },
   {
     icon: ShieldCheck,
-    title: "Security Awareness",
-    text: "Server-side API handling, authentication concepts, rate limiting, and safe credential boundaries."
+    title: "Security Updates",
+    text: "Hardened headers, server-side provider calls, request validation, rate limiting, and safe credential boundaries."
   },
   {
     icon: Code2,
-    title: "Technical Systems",
-    text: "Practical interfaces built with Next.js, Supabase, TypeScript, GitHub, and Tailwind CSS."
+    title: "Modern Stack",
+    text: "Next.js 16, React 19, TypeScript, Tailwind CSS 4, Supabase, OpenAI SDK, and GitHub workflows."
   }
+];
+
+const platformSignals = [
+  "Next.js 16.2.9 + React 19.2.7",
+  "Tailwind CSS 4.3 + TypeScript 6",
+  "OpenAI SDK 6.44 + Supabase JS 2.108",
+  "Zero npm audit vulnerabilities"
 ];
 
 export default function PortfolioPage() {
@@ -81,7 +95,7 @@ export default function PortfolioPage() {
         <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-[1.1fr_0.9fr] md:py-14">
           <div className="flex flex-col justify-center">
             <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#007a78]">
-              AI Operations Portfolio
+              AI Operations Portfolio · Updated June 2026
             </p>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-[#0f1715] md:text-6xl">
               Eyitayo Oyedo
@@ -89,7 +103,8 @@ export default function PortfolioPage() {
             <p className="mt-4 max-w-2xl text-lg leading-8 text-[#3b4845]">
               Computer Engineering graduate building AI-assisted operational
               dashboards, prompt systems, research workflows, and deployment
-              monitoring projects.
+              monitoring projects on a refreshed, security-hardened Next.js
+              stack.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
@@ -120,10 +135,14 @@ export default function PortfolioPage() {
             </div>
           </div>
           <div className="overflow-hidden rounded-lg border border-[#d7e3df] bg-[#edf4f2]">
-            <img
-              alt="AI Support Dashboard interface screenshot"
-              className="h-full min-h-[280px] w-full object-cover"
-              src="https://raw.githubusercontent.com/obone410/AI-Support-Dashboard/main/docs/assets/screenshots/dashboard-overview.png"
+            <div
+              aria-label="AI Support Dashboard interface screenshot"
+              className="h-full min-h-[280px] w-full bg-cover bg-center"
+              role="img"
+              style={{
+                backgroundImage:
+                  "url(https://raw.githubusercontent.com/obone410/AI-Support-Dashboard/main/docs/assets/screenshots/dashboard-overview.png)"
+              }}
             />
           </div>
         </div>
@@ -148,6 +167,29 @@ export default function PortfolioPage() {
               </article>
             );
           })}
+        </div>
+      </section>
+
+      <section className="border-b border-[#d9e3e0] bg-white">
+        <div className="mx-auto grid max-w-6xl gap-4 px-5 py-8 md:grid-cols-[0.8fr_1.2fr] md:items-center">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#007a78]">
+              Platform Refresh
+            </p>
+            <h2 className="mt-2 text-3xl font-semibold text-[#0f1715]">
+              Current tooling, clean audit, practical security
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {platformSignals.map((signal) => (
+              <div
+                className="rounded-lg border border-[#d9e3e0] bg-[#f8fbfa] px-4 py-3 text-sm font-semibold text-[#22443f]"
+                key={signal}
+              >
+                {signal}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -236,19 +278,19 @@ export default function PortfolioPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <SkillGroup
               title="AI & Automation"
-              value="ChatGPT, Claude Code, Prompt Engineering, Generative AI, OpenAI SDKs"
+              value="ChatGPT, Claude Code, Codex, prompt engineering, generative AI workflows, OpenAI SDK 6"
             />
             <SkillGroup
               title="Development"
-              value="Next.js, React, TypeScript, Tailwind CSS, Supabase, REST APIs"
+              value="Next.js 16, React 19, TypeScript 6, Tailwind CSS 4, Supabase, REST APIs"
             />
             <SkillGroup
               title="Cloud & DevOps"
-              value="Vercel, Docker fundamentals, Kubernetes fundamentals, CI/CD, monitoring concepts"
+              value="Vercel, Docker fundamentals, Kubernetes fundamentals, CI/CD, deployment monitoring"
             />
             <SkillGroup
-              title="Professional"
-              value="Technical research, technical support, communication, documentation, problem solving"
+              title="Security & Quality"
+              value="CSP headers, API validation, rate limiting, npm audit, technical documentation, testing"
             />
           </div>
         </div>

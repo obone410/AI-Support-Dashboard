@@ -819,6 +819,10 @@ export function SupportDashboard() {
                     : "SLA stable"
                 }
               />
+              <StatusBadge
+                icon={<CheckCircle2 size={16} aria-hidden="true" />}
+                label="Audit clean"
+              />
             </div>
           </div>
         </header>
