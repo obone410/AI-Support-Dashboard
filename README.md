@@ -57,6 +57,7 @@ The goal was to show how AI can fit into a real support workflow without exposin
 - SLA due dates, breach counts, due-soon states, and breach notifications
 - Per-ticket conversation threads persisted in the UI
 - Vercel deployment event monitoring with a demo fallback
+- Daily Supabase keepalive cron to reduce Free Plan inactivity pauses
 - Supabase schema with row-level security policies
 - Professional Apple-inspired glass interface
 - Recoverable app error screen for runtime failures
@@ -130,6 +131,7 @@ flowchart LR
 - Frontend: `src/components/support-dashboard.tsx` renders the dashboard, auth panel, ticket queue, intake form, admin views, agent assignment view, SLA notifications, deployment monitor, and chat interface.
 - AI backend: `src/app/api/ai-support/route.ts` keeps the AI API key server-side, validates request payloads with Zod, and uses the OpenAI SDK for provider calls.
 - Vercel backend: `src/app/api/vercel/deployments/route.ts` calls the Vercel deployments API from the server so Vercel tokens are never exposed to the browser.
+- Supabase keepalive: `src/app/api/cron/supabase-keepalive/route.ts` is called by Vercel Cron once per day and performs a read-only Supabase REST probe.
 - Database: `supabase/schema.sql` defines profiles, support teams, support agents, support tickets, conversation messages, and AI evaluation logs with row-level security plus indexes for common high-traffic queries.
 - Local fallback: browser local storage keeps the app usable before Supabase credentials are added. Storage writes are best-effort so blocked browser storage does not crash the UI.
 - Caching: deployment monitoring responses use `s-maxage=60` and `stale-while-revalidate=300` so Vercel can serve cached deployment data during traffic spikes.
@@ -172,9 +174,27 @@ REQUIRE_AI_AUTH=true
 VERCEL_TOKEN=
 VERCEL_PROJECT_ID=
 VERCEL_TEAM_ID=
+CRON_SECRET=
 ```
 
 `VERCEL_TEAM_ID` is optional. Use it when the monitored project belongs to a Vercel team.
+
+`CRON_SECRET` is optional for local testing but recommended in Vercel production. When it is set, Vercel automatically sends it as a bearer token to the cron route and `/api/cron/supabase-keepalive` rejects requests without the matching header.
+
+## Supabase Keepalive
+
+The project includes a Vercel Cron job in `vercel.json`:
+
+```json
+{
+  "path": "/api/cron/supabase-keepalive",
+  "schedule": "0 8 * * *"
+}
+```
+
+Vercel runs cron schedules in UTC, so this runs once per day around `09:00` Africa/Lagos time. The route performs a read-only `profiles` probe against Supabase with `Cache-Control: no-store`. It does not create junk heartbeat rows or expose table data.
+
+This is intended for lightweight availability monitoring and to keep Free Plan projects from going idle. For production workloads, the more reliable long-term option is a paid Supabase plan because paid projects are not subject to Free Plan inactivity pausing.
 
 ## Current Deployment
 
@@ -234,6 +254,7 @@ AI-assisted support operations dashboard with OpenAI, Supabase, role-based workf
 - The AI route validates Supabase session tokens when `REQUIRE_AI_AUTH=true`.
 - Public API routes include rate limiting headers.
 - AI route responses use `Cache-Control: no-store` so ticket context and assistant replies are not shared-cached.
+- Supabase keepalive responses use `Cache-Control: no-store` and support `CRON_SECRET` bearer-token protection.
 - Vercel deployment monitoring uses short CDN caching because deployment metadata is operational, not customer-private ticket data.
 - AI provider errors are logged server-side and returned to the client as generic failures.
 - Vercel API failures fall back to safe demo data instead of crashing the dashboard.
