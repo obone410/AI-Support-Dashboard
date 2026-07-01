@@ -12,7 +12,7 @@ function isCronAuthorized(request: Request) {
 
   if (!cronSecret) {
     return {
-      authorized: true,
+      authorized: false,
       secured: false
     };
   }

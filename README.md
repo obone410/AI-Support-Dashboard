@@ -179,7 +179,7 @@ CRON_SECRET=
 
 `VERCEL_TEAM_ID` is optional. Use it when the monitored project belongs to a Vercel team.
 
-`CRON_SECRET` is optional for local testing but recommended in Vercel production. When it is set, Vercel automatically sends it as a bearer token to the cron route and `/api/cron/supabase-keepalive` rejects requests without the matching header.
+`CRON_SECRET` is required for the keepalive route. Vercel automatically sends it as a bearer token to the cron route, and `/api/cron/supabase-keepalive` rejects requests when the secret is missing or the authorization header does not match. For local calls, set the variable and send `Authorization: Bearer <CRON_SECRET>`.
 
 ## Supabase Keepalive
 
@@ -254,7 +254,7 @@ AI-assisted support operations dashboard with OpenAI, Supabase, role-based workf
 - The AI route validates Supabase session tokens when `REQUIRE_AI_AUTH=true`.
 - Public API routes include rate limiting headers.
 - AI route responses use `Cache-Control: no-store` so ticket context and assistant replies are not shared-cached.
-- Supabase keepalive responses use `Cache-Control: no-store` and support `CRON_SECRET` bearer-token protection.
+- Supabase keepalive responses use `Cache-Control: no-store` and require `CRON_SECRET` bearer-token protection.
 - Vercel deployment monitoring uses short CDN caching because deployment metadata is operational, not customer-private ticket data.
 - AI provider errors are logged server-side and returned to the client as generic failures.
 - Vercel API failures fall back to safe demo data instead of crashing the dashboard.

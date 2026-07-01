@@ -17,9 +17,9 @@ describe("/api/cron/supabase-keepalive", () => {
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key",
+      CRON_SECRET: "test-cron-secret"
     };
-    delete process.env.CRON_SECRET;
     resetRateLimitStore();
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -36,6 +36,7 @@ describe("/api/cron/supabase-keepalive", () => {
   it("touches Supabase with a read-only REST probe", async () => {
     const response = await GET(
       makeRequest({
+        Authorization: "Bearer test-cron-secret",
         "x-vercel-cron-schedule": "0 8 * * *"
       })
     );
@@ -44,7 +45,7 @@ describe("/api/cron/supabase-keepalive", () => {
     expect(response.status).toBe(200);
     expect(data.ok).toBe(true);
     expect(data.source).toBe("supabase");
-    expect(data.secured).toBe(false);
+    expect(data.secured).toBe(true);
     expect(global.fetch).toHaveBeenCalledWith(
       "https://example.supabase.co/rest/v1/profiles?select=id&limit=1",
       expect.objectContaining({
@@ -57,8 +58,30 @@ describe("/api/cron/supabase-keepalive", () => {
     );
   });
 
-  it("requires the cron bearer token when CRON_SECRET is configured", async () => {
-    process.env.CRON_SECRET = "test-cron-secret";
+  it("requires the cron bearer token", async () => {
+    const response = await GET(makeRequest());
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized cron request.");
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects a mismatched cron bearer token", async () => {
+    const response = await GET(
+      makeRequest({
+        Authorization: "Bearer wrong-secret"
+      })
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.error).toBe("Unauthorized cron request.");
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects requests when CRON_SECRET is missing", async () => {
+    delete process.env.CRON_SECRET;
 
     const response = await GET(makeRequest());
     const data = await response.json();
@@ -68,9 +91,7 @@ describe("/api/cron/supabase-keepalive", () => {
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it("accepts the cron bearer token when CRON_SECRET is configured", async () => {
-    process.env.CRON_SECRET = "test-cron-secret";
-
+  it("accepts the cron bearer token", async () => {
     const response = await GET(
       makeRequest({
         Authorization: "Bearer test-cron-secret"
@@ -85,7 +106,11 @@ describe("/api/cron/supabase-keepalive", () => {
   it("returns a configuration error when Supabase env vars are missing", async () => {
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-    const response = await GET(makeRequest());
+    const response = await GET(
+      makeRequest({
+        Authorization: "Bearer test-cron-secret"
+      })
+    );
     const data = await response.json();
 
     expect(response.status).toBe(503);
@@ -99,7 +124,11 @@ describe("/api/cron/supabase-keepalive", () => {
       status: 500
     } as Response);
 
-    const response = await GET(makeRequest());
+    const response = await GET(
+      makeRequest({
+        Authorization: "Bearer test-cron-secret"
+      })
+    );
     const data = await response.json();
 
     expect(response.status).toBe(502);

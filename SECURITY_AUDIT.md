@@ -31,7 +31,7 @@ No high or critical findings remain after remediation.
 - Production responses now include security headers for HSTS, frame blocking, content-type sniffing protection, referrer policy, and browser permission restrictions.
 - Production responses now include a Content Security Policy, cross-origin opener/resource policies, origin-agent clustering, DNS prefetch blocking, and cross-domain policy blocking.
 - AI assistant requests now reject oversized payloads before parsing and cap OpenAI response tokens.
-- Supabase keepalive now runs through a Vercel Cron route that performs a read-only, no-store Supabase REST probe and enforces `CRON_SECRET` when configured.
+- Supabase keepalive now runs through a Vercel Cron route that performs a read-only, no-store Supabase REST probe and fails closed unless `CRON_SECRET` matches the bearer token.
 - Project dependencies were refreshed to the current compatible Next.js 16, React 19, Supabase JS, OpenAI SDK, Tailwind CSS, and Vitest patch lines.
 - `npm audit fix` remediated vulnerable transitive dev dependencies including affected Vite, Undici, Babel, and js-yaml versions.
 - Supabase schema now includes indexes for high-traffic ticket, assignment, SLA, and conversation queries.
