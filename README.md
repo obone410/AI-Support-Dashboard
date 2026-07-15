@@ -204,6 +204,8 @@ Production URL:
 https://ai-support-dashboard-navy.vercel.app
 ```
 
+Operator handover for future agent continuation: [docs/HERMES_HANDOVER.md](docs/HERMES_HANDOVER.md).
+
 The current Vercel project is linked as `oyedoeyitayoidowu-7673s-projects/ai-support-dashboard`. The production environment currently has Supabase, OpenAI, Vercel deployment monitoring, and `REQUIRE_AI_AUTH=true` configured in Vercel. No Supabase, OpenAI, or Vercel provider secrets are stored in the repository or local project files.
 
 Deployment monitoring is connected through server-side Vercel environment variables. Do not commit Vercel tokens to Git.
