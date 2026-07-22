@@ -24,6 +24,7 @@ The local project may contain provider link metadata such as `.vercel/project.js
 - Production Vercel deployment was previously verified as ready and serving the live alias.
 - Supabase project was verified as `ACTIVE_HEALTHY`.
 - Manual Supabase REST heartbeat succeeded on 2026-07-15 at `12:45:26Z` with `200 OK`.
+- A Codex automation named `AI Support Supabase heartbeat` was added on 2026-07-22 as a daily backup heartbeat at about `18:15` Africa/Lagos time.
 - Supabase API logs confirmed `GET | 200 | /rest/v1/profiles?select=id&limit=1 | codex-manual-heartbeat`.
 - Automatic keepalive cron is configured in `vercel.json`:
 
@@ -118,7 +119,7 @@ Automatic path:
 
 - Vercel Cron calls `/api/cron/supabase-keepalive` once per day.
 - The route checks `Authorization: Bearer <CRON_SECRET>`.
-- The route performs a read-only Supabase REST probe against `profiles?select=id&limit=1`.
+- The route performs three read-only Supabase REST probes against `profiles?select=id&limit=1`.
 - Responses are `Cache-Control: no-store`.
 
 Manual verification options:

@@ -7,6 +7,8 @@ const noStoreHeaders = {
   "Cache-Control": "no-store, max-age=0"
 };
 
+const heartbeatProbeCount = 3;
+
 function isCronAuthorized(request: Request) {
   const cronSecret = process.env.CRON_SECRET?.trim();
 
@@ -66,22 +68,29 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/profiles?select=id&limit=1`,
-      {
+    const probes: Array<{ rows: unknown; status: number }> = [];
+    const probeUrl = `${supabaseUrl}/rest/v1/profiles?select=id&limit=1`;
+
+    for (let probeIndex = 0; probeIndex < heartbeatProbeCount; probeIndex += 1) {
+      const response = await fetch(probeUrl, {
         cache: "no-store",
         headers: {
+          Accept: "application/json",
           apikey: supabaseAnonKey,
-          Authorization: `Bearer ${supabaseAnonKey}`
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          "Cache-Control": "no-store"
         }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Supabase REST returned ${response.status}`);
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`Supabase REST returned ${response.status}`);
+      probes.push({
+        rows: (await response.json()) as unknown,
+        status: response.status
+      });
     }
-
-    const rows = (await response.json()) as unknown;
 
     return NextResponse.json(
       {
@@ -90,7 +99,12 @@ export async function GET(request: Request) {
         secured: authorization.secured,
         schedule: request.headers.get("x-vercel-cron-schedule") ?? "manual",
         checkedAt: new Date().toISOString(),
-        probeRows: Array.isArray(rows) ? rows.length : 0
+        probeCount: probes.length,
+        successfulProbes: probes.filter((probe) => probe.status >= 200 && probe.status < 300).length,
+        probeRows: probes.reduce(
+          (total, probe) => total + (Array.isArray(probe.rows) ? probe.rows.length : 0),
+          0
+        )
       },
       { headers }
     );

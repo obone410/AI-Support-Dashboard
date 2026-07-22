@@ -23,6 +23,7 @@ describe("/api/cron/supabase-keepalive", () => {
     resetRateLimitStore();
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
+      status: 200,
       json: async () => []
     } as Response);
   });
@@ -46,13 +47,18 @@ describe("/api/cron/supabase-keepalive", () => {
     expect(data.ok).toBe(true);
     expect(data.source).toBe("supabase");
     expect(data.secured).toBe(true);
+    expect(data.probeCount).toBe(3);
+    expect(data.successfulProbes).toBe(3);
+    expect(global.fetch).toHaveBeenCalledTimes(3);
     expect(global.fetch).toHaveBeenCalledWith(
       "https://example.supabase.co/rest/v1/profiles?select=id&limit=1",
       expect.objectContaining({
         cache: "no-store",
         headers: {
+          Accept: "application/json",
           apikey: "anon-key",
-          Authorization: "Bearer anon-key"
+          Authorization: "Bearer anon-key",
+          "Cache-Control": "no-store"
         }
       })
     );
@@ -101,6 +107,7 @@ describe("/api/cron/supabase-keepalive", () => {
 
     expect(response.status).toBe(200);
     expect(data.secured).toBe(true);
+    expect(data.probeCount).toBe(3);
   });
 
   it("returns a configuration error when Supabase env vars are missing", async () => {

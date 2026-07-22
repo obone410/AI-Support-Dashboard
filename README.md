@@ -131,7 +131,7 @@ flowchart LR
 - Frontend: `src/components/support-dashboard.tsx` renders the dashboard, auth panel, ticket queue, intake form, admin views, agent assignment view, SLA notifications, deployment monitor, and chat interface.
 - AI backend: `src/app/api/ai-support/route.ts` keeps the AI API key server-side, validates request payloads with Zod, and uses the OpenAI SDK for provider calls.
 - Vercel backend: `src/app/api/vercel/deployments/route.ts` calls the Vercel deployments API from the server so Vercel tokens are never exposed to the browser.
-- Supabase keepalive: `src/app/api/cron/supabase-keepalive/route.ts` is called by Vercel Cron once per day and performs a read-only Supabase REST probe.
+- Supabase keepalive: `src/app/api/cron/supabase-keepalive/route.ts` is called by Vercel Cron once per day and performs multiple read-only Supabase REST probes.
 - Database: `supabase/schema.sql` defines profiles, support teams, support agents, support tickets, conversation messages, and AI evaluation logs with row-level security plus indexes for common high-traffic queries.
 - Local fallback: browser local storage keeps the app usable before Supabase credentials are added. Storage writes are best-effort so blocked browser storage does not crash the UI.
 - Caching: deployment monitoring responses use `s-maxage=60` and `stale-while-revalidate=300` so Vercel can serve cached deployment data during traffic spikes.
@@ -192,7 +192,7 @@ The project includes a Vercel Cron job in `vercel.json`:
 }
 ```
 
-Vercel runs cron schedules in UTC, so this runs once per day around `09:00` Africa/Lagos time. The route performs a read-only `profiles` probe against Supabase with `Cache-Control: no-store`. It does not create junk heartbeat rows or expose table data.
+Vercel runs cron schedules in UTC, so this runs once per day around `09:00` Africa/Lagos time. The route performs three read-only `profiles` probes against Supabase with `Cache-Control: no-store`. It does not create junk heartbeat rows or expose table data.
 
 This is intended for lightweight availability monitoring and to keep Free Plan projects from going idle. For production workloads, the more reliable long-term option is a paid Supabase plan because paid projects are not subject to Free Plan inactivity pausing.
 
