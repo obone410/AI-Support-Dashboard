@@ -54,6 +54,7 @@ describe("/api/cron/supabase-keepalive", () => {
       "https://example.supabase.co/rest/v1/profiles?select=id&limit=1",
       expect.objectContaining({
         cache: "no-store",
+        signal: expect.any(AbortSignal),
         headers: {
           Accept: "application/json",
           apikey: "anon-key",

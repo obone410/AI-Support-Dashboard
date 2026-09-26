@@ -8,6 +8,7 @@ const noStoreHeaders = {
 };
 
 const heartbeatProbeCount = 3;
+const heartbeatProbeTimeoutMs = 8_000;
 
 function isCronAuthorized(request: Request) {
   const cronSecret = process.env.CRON_SECRET?.trim();
@@ -74,6 +75,7 @@ export async function GET(request: Request) {
     for (let probeIndex = 0; probeIndex < heartbeatProbeCount; probeIndex += 1) {
       const response = await fetch(probeUrl, {
         cache: "no-store",
+        signal: AbortSignal.timeout(heartbeatProbeTimeoutMs),
         headers: {
           Accept: "application/json",
           apikey: supabaseAnonKey,

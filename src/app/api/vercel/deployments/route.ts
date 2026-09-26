@@ -9,6 +9,7 @@ export const runtime = "nodejs";
 const deploymentCacheHeaders = {
   "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300"
 };
+const vercelRequestTimeoutMs = 10_000;
 
 type VercelDeployment = {
   uid?: string;
@@ -81,6 +82,7 @@ export async function GET(request: Request) {
         headers: {
           Authorization: `Bearer ${token}`
         },
+        signal: AbortSignal.timeout(vercelRequestTimeoutMs),
         next: { revalidate: 60 }
       }
     );

@@ -12,6 +12,7 @@ const noStoreHeaders = {
 
 const maxRequestBodyBytes = 32_000;
 const maxAssistantOutputTokens = 700;
+const openAiTimeoutMs = 20_000;
 
 function createServerSupabaseClient(accessToken?: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -93,7 +94,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json().catch(() => null);
+  const rawBody = await request.text().catch(() => null);
+
+  if (rawBody === null) {
+    return NextResponse.json(
+      { error: "Invalid support assistant request." },
+      { status: 400, headers }
+    );
+  }
+
+  if (new TextEncoder().encode(rawBody).byteLength > maxRequestBodyBytes) {
+    return NextResponse.json(
+      { error: "AI support request is too large." },
+      { status: 413, headers }
+    );
+  }
+
+  let body: unknown = null;
+
+  try {
+    body = JSON.parse(rawBody) as unknown;
+  } catch {
+    // The validation response intentionally does not expose parser details.
+  }
+
   const parsed = requestSchema.safeParse(body);
 
   if (!parsed.success) {
@@ -187,7 +211,7 @@ export async function POST(request: Request) {
     : "No active ticket is selected.";
 
   try {
-    const openai = new OpenAI({ apiKey });
+    const openai = new OpenAI({ apiKey, timeout: openAiTimeoutMs });
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
       temperature: 0.35,
