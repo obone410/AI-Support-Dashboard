@@ -11,6 +11,13 @@ An AI-assisted support operations dashboard built with Next.js 16, React 19, Tai
 
 This is a portfolio MVP designed to show modern AI tooling, backend integration, deployment workflows, security awareness, admin operations, and professional product thinking.
 
+## Latest Release
+
+The September 26, 2026 production release hardens the server API layer with request-size enforcement that does not trust client-supplied `Content-Length` headers, safe malformed-JSON handling, and bounded OpenAI, Supabase, and Vercel requests. The release passed 17 tests across 4 test files, ESLint, TypeScript validation, and a production Next.js build before deployment.
+
+- Release commit: [`6ae8f7e`](https://github.com/obone410/AI-Support-Dashboard/commit/6ae8f7ebe5aba9bba3e097b2e70b6bc8038f273a)
+- Production deployment: [https://ai-support-dashboard-navy.vercel.app](https://ai-support-dashboard-navy.vercel.app)
+
 ## Visual Walkthrough
 
 <p align="center">
@@ -62,7 +69,9 @@ The goal was to show how AI can fit into a real support workflow without exposin
 - Professional Apple-inspired glass interface
 - Recoverable app error screen for runtime failures
 - Security headers, API rate limiting, and safe cache headers for deployment monitoring
-- Integration tests for the AI route, ticket creation flow, and Vercel monitoring route
+- AI request bodies capped at 32 KB using server-observed bytes, including when `Content-Length` is absent or inaccurate
+- Bounded OpenAI, Supabase heartbeat, and Vercel monitoring requests to prevent indefinite upstream waits
+- 17 automated tests covering AI request validation, authentication, rate limiting, Supabase keepalive security, ticket creation, and Vercel monitoring
 
 ## Tech Stack
 
@@ -129,9 +138,9 @@ flowchart LR
 ```
 
 - Frontend: `src/components/support-dashboard.tsx` renders the dashboard, auth panel, ticket queue, intake form, admin views, agent assignment view, SLA notifications, deployment monitor, and chat interface.
-- AI backend: `src/app/api/ai-support/route.ts` keeps the AI API key server-side, validates request payloads with Zod, and uses the OpenAI SDK for provider calls.
-- Vercel backend: `src/app/api/vercel/deployments/route.ts` calls the Vercel deployments API from the server so Vercel tokens are never exposed to the browser.
-- Supabase keepalive: `src/app/api/cron/supabase-keepalive/route.ts` is called by Vercel Cron once per day and performs multiple read-only Supabase REST probes.
+- AI backend: `src/app/api/ai-support/route.ts` keeps the AI API key server-side, caps request bodies at 32 KB based on bytes actually received, validates parsed payloads with Zod, and uses the OpenAI SDK with a 20-second timeout.
+- Vercel backend: `src/app/api/vercel/deployments/route.ts` calls the Vercel deployments API from the server with a 10-second timeout so Vercel tokens are never exposed to the browser and stalled upstream calls are bounded.
+- Supabase keepalive: `src/app/api/cron/supabase-keepalive/route.ts` is called by Vercel Cron once per day and performs multiple read-only Supabase REST probes with an 8-second timeout per probe.
 - Database: `supabase/schema.sql` defines profiles, support teams, support agents, support tickets, conversation messages, and AI evaluation logs with row-level security plus indexes for common high-traffic queries.
 - Local fallback: browser local storage keeps the app usable before Supabase credentials are added. Storage writes are best-effort so blocked browser storage does not crash the UI.
 - Caching: deployment monitoring responses use `s-maxage=60` and `stale-while-revalidate=300` so Vercel can serve cached deployment data during traffic spikes.
@@ -220,7 +229,7 @@ Keep `REQUIRE_AI_AUTH=true` in production so AI requests require a valid Supabas
 
 ## AI Evaluation Logging
 
-Each assistant response produces an evaluation record with request ID, model, latency, approximate prompt and response word counts, safety status, ticket-grounding status, next-step detection, customer-reply detection, score, and reviewer notes.
+Each assistant response produces an evaluation record with request ID, model, latency, prompt and response character counts, safety status, ticket-grounding status, next-step detection, customer-reply detection, score, and reviewer notes.
 
 When the user is authenticated, `/api/ai-support` writes the evaluation record to Supabase using the user's bearer token, so row-level security still controls access. The dashboard also displays recent evaluation logs in the right rail so reviewers can see that AI quality is treated as an operational metric, not a hidden black box.
 
@@ -265,14 +274,14 @@ AI-assisted support operations dashboard with OpenAI, Supabase, role-based workf
 
 ## Security Audit
 
-Last reviewed: May 15, 2026.
+Last reviewed: September 26, 2026.
 
 ### Checks Completed
 
 - `npm run lint` passed.
-- `npm run test` passed with 7 tests across 3 test files.
+- `npm run test` passed with 17 tests across 4 test files.
 - `npm run build` passed.
-- `npm audit --omit=dev` reported `0 vulnerabilities`.
+- `npm audit --omit=dev` reported 5 dependency advisories (1 critical, 2 high, and 2 moderate) on September 26, 2026; patched package versions are available and should be applied in the next dependency update.
 - Secret scan found no committed OpenAI, Supabase, or Vercel tokens.
 - Git ignore checks confirmed `.env`, `.env.local`, `.env.production`, and `.venv` are excluded from Git.
 - Vercel ignore rules exclude env files, virtualenv folders, local logs, dependencies, and build output from deployment uploads.
@@ -281,17 +290,21 @@ Last reviewed: May 15, 2026.
 - Production Vercel AI route returned `401` for a fake bearer token.
 - Production Vercel deployment monitoring returns live Vercel data.
 - Invalid AI API payloads correctly return `400`.
+- Malformed JSON returns a generic `400` response without exposing parser details.
+- AI request bodies larger than 32 KB return `413`, even when `Content-Length` is omitted.
 - Excessive AI requests return `429`.
 - Bearer-shaped but unvalidated AI auth tokens do not pass production auth checks.
 - The AI provider key is read only from `process.env.OPENAI_API_KEY` on the server.
 - Vercel deployment monitoring reads credentials only from server-side environment variables.
 - Vercel monitoring responses include CDN cache headers.
+- OpenAI, Vercel, and Supabase keepalive requests have explicit timeout bounds.
 - Tailwind CSS 4 migration completed with `@tailwindcss/postcss`.
 - App error boundary added to reduce user-facing crashes.
 - Production screenshots and a README GIF were captured from the live deployment using the seeded recruiter demo account.
 
 ### Remaining Hardening
 
+- Apply the available Next.js, Sharp, PostCSS, Nano ID, and baseline-browser-mapping security updates, then rerun the full test, build, and audit suite.
 - Replace the in-memory limiter with a distributed limiter such as Upstash Redis or Vercel Firewall for multi-region, million-user production traffic.
 - Fetch ticket context server-side instead of trusting client-submitted ticket data.
 - Enforce admin-only team and agent mutation with server-side role checks before adding real write APIs.

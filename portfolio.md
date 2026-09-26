@@ -17,16 +17,21 @@ I am a Computer Engineering graduate focused on AI support operations, prompt en
 
 - Built and deployed 4 production-style portfolio systems
 - Worked with AI-assisted workflows and operational tooling
-- Implemented secure API handling and deployment monitoring
+- Implemented secure API handling, bounded request payloads, rate limiting, and upstream timeouts
 - Designed systems using Supabase, Vercel, and modern frontend tooling
 - Focused on operational dashboards, AI workflows, and observability
+- Maintained an automated test suite with 17 passing tests across API and dashboard flows
 
 ### 1. AI Support Agent Dashboard
 
 Live: https://ai-support-dashboard-navy.vercel.app  
 GitHub: https://github.com/obone410/AI-Support-Dashboard
 
-AI-assisted support operations dashboard with role-based workflows, ticket management, SLA monitoring, deployment observability, and server-side AI integration.
+AI-assisted support operations dashboard with role-based workflows, ticket management, SLA monitoring, deployment observability, and server-side AI integration. The production API layer includes Zod validation, a 32 KB request-body limit enforced independently of client headers, rate limiting, authenticated AI access, and bounded OpenAI, Supabase, and Vercel requests. The latest release passed 17 tests, ESLint, TypeScript checks, and a production build before deployment.
+
+Latest production update: September 26, 2026
+
+Release commit: https://github.com/obone410/AI-Support-Dashboard/commit/6ae8f7ebe5aba9bba3e097b2e70b6bc8038f273a
 
 ### 2. PromptDeck AI / AI Prompt Management Platform
 
